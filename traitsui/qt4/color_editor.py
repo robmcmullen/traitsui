@@ -12,6 +12,8 @@
 """ Defines the various color editors for the PyQt user interface toolkit.
 """
 
+from __future__ import division
+
 #-------------------------------------------------------------------------------
 #  Imports:
 #-------------------------------------------------------------------------------
@@ -104,7 +106,15 @@ class SimpleColorEditor ( BaseSimpleEditor ):
         """ Invokes the pop-up editor for an object trait.
         """
         color = self.factory.to_qt4_color(self)
-        color = QtGui.QColorDialog.getColor(color, self.control)
+        options = QtGui.QColorDialog.ShowAlphaChannel
+        if not self.factory.use_native_dialog:
+            options |= QtGui.QColorDialog.DontUseNativeDialog
+        color = QtGui.QColorDialog.getColor(
+            color,
+            self.control,
+            u'Select Color',
+            options,
+        )
 
         if color.isValid():
             self.value = self.factory.from_qt4_color(color)
@@ -169,7 +179,7 @@ class CustomColorEditor ( Editor ):
         """ Updates the editor when the object trait changes externally to the
             editor.
         """
-        pass
+        self._simple_field.update_editor()
 
     #---------------------------------------------------------------------------
     #  Updates the object trait when a color swatch is clicked:
@@ -331,7 +341,7 @@ def color_editor_for(editor, parent):
     mapper = QtCore.QSignalMapper(panel)
 
     rows = 4
-    cols = len(color_samples) / rows
+    cols = len(color_samples) // rows
     i = 0
 
     sheet_template = """

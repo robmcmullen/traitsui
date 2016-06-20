@@ -22,7 +22,7 @@
 
 from __future__ import absolute_import
 
-from traits.trait_base import SequenceTypes, enumerate
+from traits.trait_base import SequenceTypes
 
 from traits.api import Bool, HasTraits, List, Tuple, Unicode, Int, Any, TraitType
 
@@ -217,11 +217,14 @@ class TupleStructure ( HasTraits ):
     #  Updates the underlying tuple when any field changes value:
     #---------------------------------------------------------------------------
 
-    def _field_changed ( self ):
+    def _field_changed ( self, name, old, new ):
         """ Updates the underlying tuple when any field changes value.
         """
-        self.editor.value = tuple( [ getattr( self, 'f%d' % i )
-                                     for i in range( self.fields ) ] )
+        index = int( name[ 1: ] )
+        value = self.editor.value
+        if new != value[ index ]:
+            self.editor.value = tuple( 
+                [ getattr( self, 'f%d' % i ) for i in range( self.fields ) ] )
 
 
 # Define the TupleEditor class.

@@ -211,7 +211,10 @@ class TableEditor(Editor, BaseTableEditor):
         if (factory.edit_view == ' ') or not mode in ('row', 'rows'):
             self.control = main_view
         else:
-            self.control = QtGui.QSplitter(QtCore.Qt.Vertical)
+            if factory.orientation == 'horizontal':
+                self.control = QtGui.QSplitter(QtCore.Qt.Horizontal)
+            else: 
+                self.control = QtGui.QSplitter(QtCore.Qt.Vertical)
             self.control.setSizePolicy(QtGui.QSizePolicy.Expanding,
                                        QtGui.QSizePolicy.Expanding)
             self.control.addWidget(main_view)
@@ -278,10 +281,6 @@ class TableEditor(Editor, BaseTableEditor):
     def dispose(self):
         """ Disposes of the contents of an editor."""
 
-        # Disconnect the table view from its model to ensure that they do not
-        # continue to interact (the control won't be deleted until later).
-        self.table_view.setModel(None)
-
         # Make sure that the auxillary UIs are properly disposed
         if self.toolbar_ui is not None:
             self.toolbar_ui.dispose()
@@ -299,7 +298,6 @@ class TableEditor(Editor, BaseTableEditor):
         # Remove listeners for column definition changes
         self.on_trait_change(self._update_columns, 'columns', remove=True)
         self.on_trait_change(self._update_columns, 'columns_items', remove=True)
-
 
         super(TableEditor, self).dispose()
 
@@ -384,7 +382,7 @@ class TableEditor(Editor, BaseTableEditor):
         if not isinstance(items, SequenceTypes):
             items = [ items ]
 
-        if self.factory.reverse:
+        if self.factory and self.factory.reverse:
             items = ReversedList(items)
 
         return items
@@ -577,12 +575,8 @@ class TableEditor(Editor, BaseTableEditor):
     @cached_property
     def _get_selected_indices(self):
         """Gets the row,column indices which match the selected trait"""
-
-        if len(self.selected) == 0:
-            return []
-
         selection_items = self.table_view.selectionModel().selection()
-        indices = self.model.mapSelectionFromSource(selection_items).indexes()
+        indices = self.model.mapSelectionToSource(selection_items).indexes()
         return [(index.row(), index.column()) for index in indices]
 
 
@@ -863,7 +857,7 @@ class TableView(QtGui.QTableView):
              factory.reorderable):
             vheader.installEventFilter(self)
             vheader.setResizeMode(QtGui.QHeaderView.ResizeToContents)
-        else:
+        elif not factory.show_row_labels:
             vheader.hide()
         self.setAlternatingRowColors(factory.alternate_bg_color)
         self.setHorizontalScrollMode(QtGui.QAbstractItemView.ScrollPerPixel)
