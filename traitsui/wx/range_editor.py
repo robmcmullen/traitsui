@@ -161,7 +161,7 @@ class SimpleSliderEditor(BaseRangeEditor):
         slider.SetValue(1)
         slider.SetPageSize(1000)
         slider.SetLineSize(100)
-        wx.EVT_SCROLL(slider, self.update_object_on_scroll)
+        slider.Bind(wx.EVT_SCROLL, self.update_object_on_scroll)
         sizer.Add(slider, 1, wx.EXPAND)
         self._label_hi = wx.StaticText(panel, -1, '999999', size=size)
         sizer.Add(self._label_hi, 0, wx.ALIGN_CENTER)
@@ -169,8 +169,8 @@ class SimpleSliderEditor(BaseRangeEditor):
         panel.text = text = wx.TextCtrl(panel, -1, fvalue_text,
                                         size=wx.Size(56, 20),
                                         style=wx.TE_PROCESS_ENTER)
-        wx.EVT_TEXT_ENTER(panel, text.GetId(), self.update_object_on_enter)
-        wx.EVT_KILL_FOCUS(text, self.update_object_on_enter)
+        text.Bind(wx.EVT_TEXT_ENTER, self.update_object_on_enter)
+        text.Bind(wx.EVT_KILL_FOCUS, self.update_object_on_enter)
 
         sizer.Add(text, 0, wx.LEFT | wx.EXPAND, 4)
 
@@ -201,7 +201,7 @@ class SimpleSliderEditor(BaseRangeEditor):
         """
         value = self._convert_from_slider(event.GetPosition())
         event_type = event.GetEventType()
-        if ((event_type == wxEVT_SCROLL_ENDSCROLL) or
+        if ((event_type == wx.wxEVT_SCROLL_CHANGED) or
             (self.factory.auto_set and
              (event_type == wx.wxEVT_SCROLL_THUMBTRACK)) or
             (self.factory.enter_set and
@@ -222,8 +222,6 @@ class SimpleSliderEditor(BaseRangeEditor):
     def update_object_on_enter(self, event):
         """ Handles the user pressing the Enter key in the text field.
         """
-        if isinstance(event, wx.FocusEvent):
-            event.Skip()
 
         # There are cases where this method is called with self.control ==
         # None.
@@ -465,7 +463,7 @@ class LargeRangeSliderEditor(BaseRangeEditor):
         slider.SetValue(1)
         slider.SetPageSize(1000)
         slider.SetLineSize(100)
-        wx.EVT_SCROLL(slider, self.update_object_on_scroll)
+        slider.Bind(wx.EVT_SCROLL, self.update_object_on_scroll)
         sizer.Add(slider, 6, wx.EXPAND)
 
         # Upper limit button:
@@ -474,7 +472,7 @@ class LargeRangeSliderEditor(BaseRangeEditor):
         button_hi = wx.BitmapButton(panel, -1, bitmap=bmp, size=(-1, 20),
                                     style=wx.BU_EXACTFIT | wx.NO_BORDER)
         panel.button_hi = button_hi
-        button_hi.Bind(wx.EVT_BUTTON, self.increase_range, button_hi)
+        button_hi.Bind(wx.EVT_BUTTON, self.increase_range)
         sizer.Add(button_hi, 1, wx.ALIGN_CENTER)
 
         # Upper limit label:
@@ -486,8 +484,8 @@ class LargeRangeSliderEditor(BaseRangeEditor):
         panel.text = text = wx.TextCtrl(panel, -1, fvalue_text,
                                         size=wx.Size(56, 20),
                                         style=wx.TE_PROCESS_ENTER)
-        wx.EVT_TEXT_ENTER(panel, text.GetId(), self.update_object_on_enter)
-        wx.EVT_KILL_FOCUS(text, self.update_object_on_enter)
+        text.Bind(wx.EVT_TEXT_ENTER, self.update_object_on_enter)
+        text.Bind(wx.EVT_KILL_FOCUS, self.update_object_on_enter)
 
         sizer.Add(text, 0, wx.LEFT | wx.EXPAND, 4)
 
@@ -518,7 +516,7 @@ class LargeRangeSliderEditor(BaseRangeEditor):
         event_type = event.GetEventType()
         try:
             self.ui_changing = True
-            if ((event_type == wxEVT_SCROLL_ENDSCROLL) or
+            if ((event_type == wx.wxEVT_SCROLL_CHANGED) or
                 (self.factory.auto_set and
                  (event_type == wx.wxEVT_SCROLL_THUMBTRACK)) or
                 (self.factory.enter_set and
@@ -537,8 +535,6 @@ class LargeRangeSliderEditor(BaseRangeEditor):
     def update_object_on_enter(self, event):
         """ Handles the user pressing the Enter key in the text field.
         """
-        if isinstance(event, wx.FocusEvent):
-            event.Skip()
         try:
             value = self.control.text.GetValue().strip()
             try:
@@ -783,9 +779,8 @@ class SimpleSpinEditor(BaseRangeEditor):
                                    min=low,
                                    max=high,
                                    initial=self.value)
-        wx.EVT_SPINCTRL(parent, self.control.GetId(), self.update_object)
-        if wx.VERSION < (3, 0):
-            wx.EVT_TEXT(parent, self.control.GetId(), self.update_object)
+        self.control.Bind(wx.EVT_SPINCTRL, self.update_object)
+        self.control.Bind(wx.EVT_TEXT, self.update_object)
         self.set_tooltip()
 
     #-------------------------------------------------------------------------
@@ -799,7 +794,8 @@ class SimpleSpinEditor(BaseRangeEditor):
             return
         self._locked = True
         try:
-            self.value = self.control.GetValue()
+            if self.control:
+                self.value = self.control.GetValue()
         finally:
             self._locked = False
 
@@ -884,16 +880,16 @@ class RangeTextEditor(TextEditor):
         self.sync_value(self.factory.high_name, 'high', 'from')
 
         if self.factory.enter_set:
-            control = wx.TextCtrl(parent, -1, self.str_value,
-                                  style=wx.TE_PROCESS_ENTER)
-            wx.EVT_TEXT_ENTER(parent, control.GetId(), self.update_object)
+            control = wx.TextCtrl(
+                parent, -1, self.str_value, style=wx.TE_PROCESS_ENTER)
+            control.Bind(wx.EVT_TEXT_ENTER, self.update_object)
         else:
             control = wx.TextCtrl(parent, -1, self.str_value)
 
-        wx.EVT_KILL_FOCUS(control, self.update_object)
+        control.Bind(wx.EVT_KILL_FOCUS, self.update_object)
 
         if self.factory.auto_set:
-            wx.EVT_TEXT(parent, control.GetId(), self.update_object)
+            control.Bind(wx.EVT_TEXT, self.update_object)
 
         self.evaluate = self.factory.evaluate
         self.sync_value(self.factory.evaluate_name, 'evaluate', 'from')
@@ -927,7 +923,10 @@ class RangeTextEditor(TextEditor):
                 if self.factory.is_float:
                     value = float(value)
                 else:
-                    value = int(value)
+                    try:
+                        value = int(value)
+                    except:
+                        pass
         except Exception as excp:
             # The conversion failed.
             self.error(excp)

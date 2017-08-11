@@ -124,7 +124,7 @@ class Editor(UIEditor):
         if control is None:
             control = self.control
 
-        control.SetToolTipString(desc)
+        control.SetToolTip(desc)
 
         return True
 

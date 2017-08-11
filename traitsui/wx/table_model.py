@@ -778,7 +778,7 @@ class TableModel(GridModel):
         grid = self.editor.grid
         coords = wxg.GridCellCoords(row, col)
         x, y, dx, dy = grid._grid.BlockToDeviceRect(coords, coords)
-        x, y = grid._grid_window.ClientToScreenXY(x, y)
+        x, y = grid._grid_window.Window.ClientToScreen(x, y)
 
         return (x, y, dx, dy)
 

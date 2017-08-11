@@ -285,22 +285,22 @@ class TabularEditor(Editor):
 
         # Set up the list control's event handlers:
         id = control.GetId()
-        wx.EVT_LIST_BEGIN_DRAG(parent, id, self._begin_drag)
-        wx.EVT_LIST_BEGIN_LABEL_EDIT(parent, id, self._begin_label_edit)
-        wx.EVT_LIST_END_LABEL_EDIT(parent, id, self._end_label_edit)
-        wx.EVT_LIST_ITEM_SELECTED(parent, id, self._item_selected)
-        wx.EVT_LIST_ITEM_DESELECTED(parent, id, self._item_selected)
-        wx.EVT_LIST_KEY_DOWN(parent, id, self._key_down)
-        wx.EVT_LIST_ITEM_ACTIVATED(parent, id, self._item_activated)
-        wx.EVT_LIST_COL_END_DRAG(parent, id, self._size_modified)
-        wx.EVT_LIST_COL_RIGHT_CLICK(parent, id, self._column_right_clicked)
-        wx.EVT_LIST_COL_CLICK(parent, id, self._column_clicked)
-        wx.EVT_LEFT_DOWN(control, self._left_down)
-        wx.EVT_LEFT_DCLICK(control, self._left_dclick)
-        wx.EVT_RIGHT_DOWN(control, self._right_down)
-        wx.EVT_RIGHT_DCLICK(control, self._right_dclick)
-        wx.EVT_MOTION(control, self._motion)
-        wx.EVT_SIZE(control, self._size_modified)
+        control.Bind(wx.EVT_LIST_BEGIN_DRAG, self._begin_drag)
+        control.Bind(wx.EVT_LIST_BEGIN_LABEL_EDIT, self._begin_label_edit)
+        control.Bind(wx.EVT_LIST_END_LABEL_EDIT, self._end_label_edit)
+        control.Bind(wx.EVT_LIST_ITEM_SELECTED, self._item_selected)
+        control.Bind(wx.EVT_LIST_ITEM_DESELECTED, self._item_selected)
+        control.Bind(wx.EVT_LIST_KEY_DOWN, self._key_down)
+        control.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self._item_activated)
+        control.Bind(wx.EVT_LIST_COL_END_DRAG, self._size_modified)
+        control.Bind(wx.EVT_LIST_COL_RIGHT_CLICK, self._column_right_clicked)
+        control.Bind(wx.EVT_LIST_COL_CLICK, self._column_clicked)
+        control.Bind(wx.EVT_LEFT_DOWN, self._left_down)
+        control.Bind(wx.EVT_LEFT_DCLICK, self._left_dclick)
+        control.Bind(wx.EVT_RIGHT_DOWN, self._right_down)
+        control.Bind(wx.EVT_RIGHT_DCLICK, self._right_dclick)
+        control.Bind(wx.EVT_MOTION, self._motion)
+        control.Bind(wx.EVT_SIZE, self._size_modified)
 
         # Set up the drag and drop target:
         if PythonDropTarget is not None:
@@ -371,22 +371,22 @@ class TabularEditor(Editor):
         control = self.control
         parent = control.GetParent()
         id = control.GetId()
-        wx.EVT_LIST_BEGIN_DRAG(parent, id, None)
-        wx.EVT_LIST_BEGIN_LABEL_EDIT(parent, id, None)
-        wx.EVT_LIST_END_LABEL_EDIT(parent, id, None)
-        wx.EVT_LIST_ITEM_SELECTED(parent, id, None)
-        wx.EVT_LIST_ITEM_DESELECTED(parent, id, None)
-        wx.EVT_LIST_KEY_DOWN(parent, id, None)
-        wx.EVT_LIST_ITEM_ACTIVATED(parent, id, None)
-        wx.EVT_LIST_COL_END_DRAG(parent, id, None)
-        wx.EVT_LIST_COL_RIGHT_CLICK(parent, id, None)
-        wx.EVT_LIST_COL_CLICK(parent, id, None)
-        wx.EVT_LEFT_DOWN(control, None)
-        wx.EVT_LEFT_DCLICK(control, None)
-        wx.EVT_RIGHT_DOWN(control, None)
-        wx.EVT_RIGHT_DCLICK(control, None)
-        wx.EVT_MOTION(control, None)
-        wx.EVT_SIZE(control, None)
+        control.Bind(wx.EVT_LIST_BEGIN_DRAG, None)
+        control.Bind(wx.EVT_LIST_BEGIN_LABEL_EDIT, None)
+        control.Bind(wx.EVT_LIST_END_LABEL_EDIT, None)
+        control.Bind(wx.EVT_LIST_ITEM_SELECTED, None)
+        control.Bind(wx.EVT_LIST_ITEM_DESELECTED, None)
+        control.Bind(wx.EVT_LIST_KEY_DOWN, None)
+        control.Bind(wx.EVT_LIST_ITEM_ACTIVATED, None)
+        control.Bind(wx.EVT_LIST_COL_END_DRAG, None)
+        control.Bind(wx.EVT_LIST_COL_RIGHT_CLICK, None)
+        control.Bind(wx.EVT_LIST_COL_CLICK, None)
+        control.Bind(wx.EVT_LEFT_DOWN, None)
+        control.Bind(wx.EVT_LEFT_DCLICK, None)
+        control.Bind(wx.EVT_RIGHT_DOWN, None)
+        control.Bind(wx.EVT_RIGHT_DCLICK, None)
+        control.Bind(wx.EVT_MOTION, None)
+        control.Bind(wx.EVT_SIZE, None)
 
         self.context_object.on_trait_change(
             self.update_editor,
@@ -695,7 +695,7 @@ class TabularEditor(Editor):
         """ Handles the user pressing a key in the list control.
         """
         key = event.GetKeyCode()
-        if key == wx.WXK_NEXT:
+        if key == wx.WXK_NUMPAD_ADD:
             self._append_new()
         elif key in (wx.WXK_BACK, wx.WXK_DELETE):
             self._delete_current()
@@ -737,7 +737,7 @@ class TabularEditor(Editor):
         control = self.control
         n = control.GetColumnCount()
         if n == 1:
-            dx, dy = control.GetClientSizeTuple()
+            dx, dy = control.GetClientSize().Get()
             control.SetColumnWidth(0, dx - 1)
         elif n > 1:
             do_later(self._set_column_widths)
@@ -920,7 +920,7 @@ class TabularEditor(Editor):
             return
 
         object, name = self.object, self.name
-        dx, dy = control.GetClientSize()
+        dx, dy = control.GetClientSize().Get()
         if is_mac:
             dx -= scrollbar_dx
         n = control.GetColumnCount()

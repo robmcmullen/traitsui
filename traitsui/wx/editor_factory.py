@@ -79,8 +79,8 @@ class SimpleEditor(Editor):
             widget.
         """
         self.control = self.create_control(parent)
-        wx.EVT_LEFT_DOWN(self.control, self._enable_popup_editor)
-        wx.EVT_LEFT_UP(self.control, self._show_popup_editor)
+        self.control.Bind(wx.EVT_LEFT_DOWN, self._enable_popup_editor)
+        self.control.Bind(wx.EVT_LEFT_UP, self._show_popup_editor)
         self.set_tooltip()
 
     #-------------------------------------------------------------------------
@@ -135,10 +135,10 @@ class TextEditor(Editor):
         """ Finishes initializing the editor by creating the underlying toolkit
             widget.
         """
-        self.control = wx.TextCtrl(parent, -1, self.str_value,
-                                   style=wx.TE_PROCESS_ENTER)
-        wx.EVT_KILL_FOCUS(self.control, self.update_object)
-        wx.EVT_TEXT_ENTER(parent, self.control.GetId(), self.update_object)
+        self.control = wx.TextCtrl(
+            parent, -1, self.str_value, style=wx.TE_PROCESS_ENTER)
+        self.control.Bind(wx.EVT_KILL_FOCUS, self.update_object)
+        self.control.Bind(wx.EVT_TEXT_ENTER, self.update_object)
         self.set_tooltip()
 
     #-------------------------------------------------------------------------
@@ -148,12 +148,11 @@ class TextEditor(Editor):
     def update_object(self, event):
         """ Handles the user changing the contents of the edit control.
         """
-        if isinstance(event, wx.FocusEvent):
-            event.Skip()
         try:
             self.value = self.control.GetValue()
         except TraitError as excp:
             pass
+        event.Skip()
 
 #-------------------------------------------------------------------------
 #  'ReadonlyEditor' class:

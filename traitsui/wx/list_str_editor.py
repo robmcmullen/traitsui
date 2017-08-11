@@ -210,21 +210,21 @@ class _ListStrEditor(Editor):
 
         # Set up the list control's event handlers:
         id = control.GetId()
-        wx.EVT_LIST_BEGIN_DRAG(parent, id, self._begin_drag)
-        wx.EVT_LIST_BEGIN_LABEL_EDIT(parent, id, self._begin_label_edit)
-        wx.EVT_LIST_END_LABEL_EDIT(parent, id, self._end_label_edit)
-        wx.EVT_LIST_ITEM_SELECTED(parent, id, self._item_selected)
-        wx.EVT_LIST_ITEM_DESELECTED(parent, id, self._item_selected)
-        wx.EVT_LIST_ITEM_RIGHT_CLICK(parent, id, self._right_clicked)
-        wx.EVT_LIST_ITEM_ACTIVATED(parent, id, self._item_activated)
-        wx.EVT_SIZE(control, self._size_modified)
+        self.control.Bind(wx.EVT_LIST_BEGIN_DRAG, self._begin_drag)
+        self.control.Bind(wx.EVT_LIST_BEGIN_LABEL_EDIT, self._begin_label_edit)
+        self.control.Bind(wx.EVT_LIST_END_LABEL_EDIT, self._end_label_edit)
+        self.control.Bind(wx.EVT_LIST_ITEM_SELECTED, self._item_selected)
+        self.control.Bind(wx.EVT_LIST_ITEM_DESELECTED, self._item_selected)
+        self.control.Bind(wx.EVT_LIST_ITEM_RIGHT_CLICK, self._right_clicked)
+        self.control.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self._item_activated)
+        self.control.Bind(wx.EVT_SIZE, self._size_modified)
 
         # Handle key events:
-        wx.EVT_CHAR(control, self._key_pressed)
+        self.control.Bind(wx.EVT_CHAR, self._key_pressed)
 
         # Handle mouse events:
         if 'edit' in factory.operations:
-            wx.EVT_LEFT_DOWN(control, self._left_down)
+            self.control.Bind(wx.EVT_LEFT_DOWN, self._left_down)
 
         # Set up the drag and drop target:
         if PythonDropTarget is not None:
@@ -304,7 +304,7 @@ class _ListStrEditor(Editor):
         control.SetItemCount(n)
         if control.GetItemCount() > 0:
             control.RefreshItems(0, control.GetItemCount() - 1)
-        control.SetColumnWidth(0, control.GetClientSizeTuple()[0])
+        control.SetColumnWidth(0, control.GetClientSize().Get()[0])
 
         edit, self.edit = self.edit, False
         index, self.index = self.index, None
@@ -581,7 +581,7 @@ class _ListStrEditor(Editor):
     def _size_modified(self, event):
         """ Handles the size of the list control being changed.
         """
-        dx, dy = self.control.GetClientSizeTuple()
+        dx, dy = self.control.GetClientSize().Get()
         self.control.SetColumnWidth(0, dx - 1)
         event.Skip()
 
@@ -797,7 +797,7 @@ class _ListStrEditor(Editor):
             index = selected[0]
             if index < self.item_count:
                 try:
-                    from pyface.wx.clipboard import clipboard
+                    from pyface.api import clipboard
 
                     clipboard.data = self.adapter.get_text(self.object,
                                                            self.name, index)
@@ -817,7 +817,7 @@ class _ListStrEditor(Editor):
                 index = selected[0]
                 if index < self.item_count:
                     try:
-                        from pyface.wx.clipboard import clipboard
+                        from pyface.api import clipboard
 
                         clipboard.data = self.adapter.get_text(
                             self.object, self.name, index)
@@ -836,7 +836,7 @@ class _ListStrEditor(Editor):
             selected = self._get_selected()
             if len(selected) == 1:
                 try:
-                    from pyface.wx.clipboard import clipboard
+                    from pyface.api import clipboard
 
                     self._set_text_current(selected[0], clipboard.text_data,
                                            insert=True)

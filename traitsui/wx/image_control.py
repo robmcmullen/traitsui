@@ -167,7 +167,7 @@ class ImageControl(wx.Window):
             self._button_down = False
 
         if self._selected is not None:
-            wdx, wdy = self.GetClientSizeTuple()
+            wdx, wdy = self.GetClientSize().Get()
             x = event.GetX()
             y = event.GetY()
             if (0 <= x < wdx) and (0 <= y < wdy):
@@ -190,7 +190,7 @@ class ImageControl(wx.Window):
         """ Handles the control being re-painted.
         """
         wdc = wx.PaintDC(self)
-        wdx, wdy = self.GetClientSizeTuple()
+        wdx, wdy = self.GetClientSize().Get()
         bitmap = self._bitmap
         bdx = bitmap.GetWidth()
         bdy = bitmap.GetHeight()

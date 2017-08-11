@@ -92,14 +92,14 @@ class SimpleEditor(SimpleTextEditor):
             if factory.enter_set:
                 control = wx.TextCtrl(panel, -1, '',
                                       style=wx.TE_PROCESS_ENTER)
-                wx.EVT_TEXT_ENTER(panel, control.GetId(), self.update_object)
+                control.Bind(wx.EVT_TEXT_ENTER, self.update_object )
             else:
                 control = wx.TextCtrl(panel, -1, '')
 
-            wx.EVT_KILL_FOCUS(control, self.update_object)
+            control.Bind(wx.EVT_KILL_FOCUS, self.update_object )
 
             if factory.auto_set:
-                wx.EVT_TEXT(panel, control.GetId(), self.update_object)
+                control.Bind(wx.EVT_TEXT, self.update_object )
 
             bmp = wx.ArtProvider.GetBitmap(wx.ART_FOLDER_OPEN,
                                            size=(15, 15))
@@ -110,8 +110,8 @@ class SimpleEditor(SimpleTextEditor):
         self._file_name = control
         sizer.Add(control, 1, wx.EXPAND | wx.ALIGN_CENTER)
         sizer.Add(button, 0, wx.LEFT | wx.ALIGN_CENTER, pad)
-        wx.EVT_BUTTON(panel, button.GetId(), self.show_file_dialog)
-        panel.SetDropTarget(FileDropTarget(self))
+        parent.Bind(wx.EVT_BUTTON, self.show_file_dialog, button )
+        control.SetDropTarget( FileDropTarget( self ) )
         panel.SetSizerAndFit(sizer)
         self._button = button
 
@@ -154,8 +154,6 @@ class SimpleEditor(SimpleTextEditor):
     def update_object(self, event):
         """ Handles the user changing the contents of the edit control.
         """
-        if isinstance(event, wx.FocusEvent):
-            event.Skip()
         self._update(self._file_name.GetValue())
 
     #-------------------------------------------------------------------------
@@ -336,9 +334,9 @@ class CustomEditor(SimpleTextEditor):
         self.control = wx.GenericDirCtrl(parent, style=style)
         self._tree = tree = self.control.GetTreeCtrl()
         id = tree.GetId()
-        wx.EVT_TREE_SEL_CHANGED(tree, id, self.update_object)
-        wx.EVT_TREE_ITEM_ACTIVATED(tree, id, self._on_dclick)
-        wx.EVT_TREE_ITEM_GETTOOLTIP(tree, id, self._on_tooltip)
+        tree.Bind(wx.EVT_TREE_SEL_CHANGED, self.update_object )
+        tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self._on_dclick )
+        tree.Bind(wx.EVT_TREE_ITEM_GETTOOLTIP, self._on_tooltip )
 
         self.filter = factory.filter
         self.sync_value(factory.filter_name, 'filter', 'from', is_list=True)
@@ -353,8 +351,8 @@ class CustomEditor(SimpleTextEditor):
         tree, self._tree = self._tree, None
         id = tree.GetId()
 
-        wx.EVT_TREE_SEL_CHANGED(tree, id, None)
-        wx.EVT_TREE_ITEM_ACTIVATED(tree, id, None)
+        tree.Bind(wx.EVT_TREE_SEL_CHANGED,  None )
+        tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED,  None )
 
         super(CustomEditor, self).dispose()
 
@@ -468,10 +466,10 @@ class PopupFile(PopupControl):
                                                 filter='|'.join(self.filter))
         files.SetPath(self.file_name)
         self._tree = tree = files.GetTreeCtrl()
-        wx.EVT_TREE_SEL_CHANGED(tree, tree.GetId(), self._select_file)
+        tree.Bind(wx.EVT_TREE_SEL_CHANGED, self._select_file )
 
     def dispose(self):
-        wx.EVT_TREE_SEL_CHANGED(self._tree, self._tree.GetId(), None)
+        self._tree.Bind(wx.EVT_TREE_SEL_CHANGED, None )
         self._tree = self._files = None
 
     def get_style(self):

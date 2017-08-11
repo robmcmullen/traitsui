@@ -54,7 +54,10 @@ class CustomEditor(Editor):
         """ Finishes initializing the editor by creating the underlying toolkit
             widget.
         """
-        factory = self.factory.factory
+        try:
+            factory = self.factory.factory
+        except:
+            factory = self.factory
         if factory is not None:
             try:
                 self.control = factory(*((parent, self) + self.factory.args))

@@ -198,18 +198,17 @@ class SimpleEditor(BaseEditor):
         if factory.evaluate is None:
             self.control = control = wx.Choice(parent, -1, wx.Point(0, 0),
                                                wx.Size(-1, -1), self.names)
-            wx.EVT_CHOICE(parent, self.control.GetId(), self.update_object)
+            self.control.Bind(wx.EVT_CHOICE, self.update_object )
         else:
             self.control = control = wx.ComboBox(parent, -1, '',
                                                  wx.Point(0, 0), wx.Size(-1, -1), self.names,
                                                  style=wx.CB_DROPDOWN)
-            wx.EVT_COMBOBOX(parent, control.GetId(), self.update_object)
-            wx.EVT_TEXT_ENTER(parent, control.GetId(),
-                              self.update_text_object)
-            wx.EVT_KILL_FOCUS(control, self.on_kill_focus)
+            self.control.Bind(wx.EVT_COMBOBOX, self.update_object )
+            self.control.Bind(wx.EVT_TEXT_ENTER, self.update_text_object )
+            self.control.Bind(wx.EVT_KILL_FOCUS, self.on_kill_focus )
 
             if (not factory.is_grid_cell) and factory.auto_set:
-                wx.EVT_TEXT(parent, control.GetId(), self.update_text_object)
+                self.control.Bind(wx.EVT_TEXT, self.update_text_object )
 
         self._no_enum_update = 0
         self.set_tooltip()
@@ -445,7 +444,10 @@ class RadioEditor(BaseEditor):
         # Create a sizer to manage the radio buttons:
         names = self.names
         mapping = self.mapping
-        n = len(names)
+        if names is not None:
+            n = len(names)
+        else:
+            n=0
         cols = self.factory.cols
         rows = (n + cols - 1) / cols
         incr = [n / cols] * cols
@@ -470,8 +472,7 @@ class RadioEditor(BaseEditor):
                     control.value = mapping[name]
                     style = 0
                     control.SetValue(name == cur_name)
-                    wx.EVT_RADIOBUTTON(panel, control.GetId(),
-                                       self.update_object)
+                    self.control.Bind(wx.EVT_RADIOBUTTON, self.update_object )
                     self.set_tooltip(control)
                     index += incr[j]
                     n -= 1
@@ -509,7 +510,7 @@ class ListEditor(BaseEditor):
         self.control = wx.ListBox(parent, -1, wx.Point(0, 0),
                                   wx.Size(-1, -1), self.names,
                                   style=wx.LB_SINGLE | wx.LB_NEEDED_SB)
-        wx.EVT_LISTBOX(parent, self.control.GetId(), self.update_object)
+        parent.Bind(wx.EVT_LISTBOX, self.update_object )
         self.set_tooltip()
 
     def dispose(self):

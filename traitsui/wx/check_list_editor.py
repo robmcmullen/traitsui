@@ -93,7 +93,7 @@ class SimpleEditor(EditorWithList):
         """
         self.control = wx.Choice(parent, -1,
                                  wx.Point(0, 0), wx.Size(100, 20), [])
-        wx.EVT_CHOICE(parent, self.control.GetId(), self.update_object)
+        self.control.Bind(wx.EVT_CHOICE, self.update_object)
 
     #-------------------------------------------------------------------------
     #  Handles the list of legal check list values being updated:
@@ -227,7 +227,7 @@ class CustomEditor(SimpleEditor):
                     control = wx.CheckBox(panel, -1, label)
                     control.value = value = values[index]
                     control.SetValue(value in cur_value)
-                    wx.EVT_CHECKBOX(panel, control.GetId(), self.update_object)
+                    control.Bind(wx.EVT_CHECKBOX, self.update_object)
                     index += incr[j]
                     n -= 1
                 else:
