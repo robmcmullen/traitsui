@@ -97,16 +97,21 @@ class SimpleEditor(Editor):
             self.scrollable = True
 
         if factory.enter_set and (not multi_line):
-            control = wx.TextCtrl(parent, -1, self.str_value,
-                                  style=style | wx.TE_PROCESS_ENTER)
-            wx.EVT_TEXT_ENTER(parent, control.GetId(), self.update_object)
+            control = wx.TextCtrl(
+                parent, -1, self.str_value, style=style | wx.TE_PROCESS_ENTER)
+            parent.Bind(wx.EVT_TEXT_ENTER, self.update_object, control)
+            parent.Bind(wx.EVT_TEXT, self.update_object, control)
         else:
             control = wx.TextCtrl(parent, -1, self.str_value, style=style)
-
-        wx.EVT_KILL_FOCUS(control, self.update_object)
+            parent.Bind(wx.EVT_TEXT_ENTER, self.update_object, control)
+            parent.Bind(wx.EVT_TEXT, self.update_object, control)
+        #wx.EVT_KILL_FOCUS( control, self.update_object )
+        control.Bind(wx.EVT_KILL_FOCUS, self.update_object)
 
         if factory.auto_set:
-            wx.EVT_TEXT(parent, control.GetId(), self.update_object)
+            #wx.EVT_TEXT( parent, control.GetId(), self.update_object )
+            #parent.Bind(wx.EVT_TEXT, self.update_object, control)
+            control.Bind(wx.EVT_TEXT, self.update_object)
 
         self.control = control
         self.set_error_state(False)
@@ -119,10 +124,6 @@ class SimpleEditor(Editor):
     def update_object(self, event):
         """ Handles the user entering input data in the edit control.
         """
-        if isinstance(event, wx.FocusEvent):
-            # Ensure that the base class' focus event handlers are run, some
-            # built-in behavior may break on some platforms otherwise.
-            event.Skip()
 
         if (not self._no_update) and (self.control is not None):
             try:
@@ -136,6 +137,7 @@ class SimpleEditor(Editor):
 
             except TraitError as excp:
                 pass
+        event.Skip()
 
     #-------------------------------------------------------------------------
     #  Updates the editor when the object trait changes external to the editor:
@@ -239,10 +241,10 @@ class ReadonlyEditor(BaseReadonlyEditor):
 
         if self.factory.view is not None:
             control = self.control
-            wx.EVT_ENTER_WINDOW(control, self._enter_window)
-            wx.EVT_LEAVE_WINDOW(control, self._leave_window)
-            wx.EVT_LEFT_DOWN(control, self._left_down)
-            wx.EVT_LEFT_UP(control, self._left_up)
+            control.Bind(wx.EVT_ENTER_WINDOW, self._enter_window)
+            control.Bind(wx.EVT_LEAVE_WINDOW, self._leave_window)
+            control.Bind(wx.EVT_LEFT_DOWN, self._left_down)
+            control.Bind(wx.EVT_LEFT_UP, self._left_up)
 
     #-------------------------------------------------------------------------
     #  Updates the editor when the object trait changes external to the editor:
@@ -275,10 +277,10 @@ class ReadonlyEditor(BaseReadonlyEditor):
         """
         if self.factory.view is not None:
             control = self.control
-            wx.EVT_ENTER_WINDOW(control, None)
-            wx.EVT_LEAVE_WINDOW(control, None)
-            wx.EVT_LEFT_DOWN(control, None)
-            wx.EVT_LEFT_UP(control, None)
+            control.Bind(wx.EVT_ENTER_WINDOW, None)
+            control.Bind(wx.EVT_LEAVE_WINDOW, None)
+            control.Bind(wx.EVT_LEFT_DOWN, None)
+            control.Bind(wx.EVT_LEFT_UP, None)
 
         super(ReadonlyEditor, self).dispose()
 

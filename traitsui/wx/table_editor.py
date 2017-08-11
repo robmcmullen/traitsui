@@ -294,7 +294,7 @@ class TableEditor(Editor, BaseTableEditor):
         # Set the min height of the grid panel to 0, this will provide
         # a scrollbar if the window is resized such that only the first row
         # is visible
-        panel.SetMinSize((-1, 0))
+        #panel.SetMinSize((-1, 0))#this line causes problems in Mayavi
 
         # Finish the panel layout setup:
         panel.SetSizer(sizer)
@@ -361,7 +361,8 @@ class TableEditor(Editor, BaseTableEditor):
         else:
             min_height = (max_rows * height)
 
-        _grid.SetMinSize(wx.Size(min_width, min_height))
+        # the following line causes some layout issues 6/6/17
+        #_grid.SetMinSize(wx.Size(min_width, min_height))
 
         # On Linux, there is what appears to be a bug in wx in which the
         # vertical scrollbar will not be sized properly if the TableEditor is
@@ -766,7 +767,12 @@ class TableEditor(Editor, BaseTableEditor):
             values.sort(key=itemgetter(0))
             index, row = values[0]
         else:
-            index, row = -1, None
+            if self.grid._moveTo is None:
+                index, row = -1, None
+            else:
+                row = self.grid._moveTo[0]
+                values.append((rio(row), gfi(row))) 
+                index, row = values[0]
 
         # Save the new selection information:
         self.set(selected_row_index=index,
@@ -828,11 +834,16 @@ class TableEditor(Editor, BaseTableEditor):
                 values.append((col, cols[col].name))
 
         if len(values) > 0:
-            # Sort by increasing column index:
+            # Sort by increasing row index:
             values.sort(key=itemgetter(0))
             index, column = values[0]
         else:
-            index, column = -1, ''
+            if self.grid._moveTo is None:
+                index, row = -1, ''
+            else:
+                col = self.grid._moveTo[1]
+                values.append((col, cols[col].name))
+                index, column = values[0]
 
         # Save the new selection information:
         self.set(selected_column_index=index,
@@ -897,6 +908,18 @@ class TableEditor(Editor, BaseTableEditor):
         else:
             index, cell = (-1, -1), (None, '')
 
+        if len(values) > 0:
+            # Sort by increasing row index:
+            values.sort(key=itemgetter(0))
+            index, row = values[0]
+        else:
+            if self.grid._moveTo is None:
+                index, row = (-1, -1), (None, '')
+            else:
+                row, col = self.grid._moveTo
+                item = gfi(row)
+                values.append(((rio(row), col), (item, cols[col].name)))
+                index, cell = values[0]
         # Save the new selection information:
         self.set(selected_cell_index=index,
                  trait_change_notify=False)

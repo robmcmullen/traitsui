@@ -990,7 +990,7 @@ class FillPanel(object):
             # following section, depending upon whether we have wrapped an
             # ImagePanel around the editor control or not:
             control = editor.control
-            width, height = control.GetSizeTuple()
+            width, height = control.GetSize().Get()
 
             # Set the correct size on the control, as specified by the user:
             scrollable = editor.scrollable
@@ -1129,7 +1129,7 @@ class FillPanel(object):
                   pad_side, self.label_pad)
 
         if desc != '':
-            control.SetToolTipString('Specifies ' + desc)
+            control.SetToolTip('Specifies ' + desc)
 
         return control
 
@@ -1244,7 +1244,7 @@ class HTMLHelpWindow(wx.Frame):
         sizer.Add(wx.StaticLine(self, -1), 0, wx.EXPAND)
         b_sizer = wx.BoxSizer(wx.HORIZONTAL)
         button = wx.Button(self, -1, 'OK')
-        wx.EVT_BUTTON(self, button.GetId(), self._on_ok)
+        self.Bind(wx.EVT_BUTTON, self._on_ok, button)  #.GetId() )
         b_sizer.Add(button, 0)
         sizer.Add(b_sizer, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
         self.SetSizer(sizer)

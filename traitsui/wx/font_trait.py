@@ -190,7 +190,6 @@ def get_font_editor(*args, **traits):
 
 fh = TraitWXFont()
 WxFont = Trait(
-    wx.SystemSettings_GetFont(
-        wx.SYS_DEFAULT_GUI_FONT),
+    wx.SystemSettings.GetFont(wx.SYS_DEFAULT_GUI_FONT),
     fh,
     editor=get_font_editor)

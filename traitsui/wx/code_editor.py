@@ -144,12 +144,11 @@ class SourceEditor(Editor):
         control.CmdKeyClear(ord('N'), stc.STC_SCMOD_CTRL)
 
         # Set up the events
-        wx.EVT_KILL_FOCUS(control, self.wx_update_object)
-        stc.EVT_STC_CALLTIP_CLICK(control, control.GetId(),
-                                  self._calltip_clicked)
+        control.Bind(wx.EVT_KILL_FOCUS, self.wx_update_object)
+        control.Bind(stc.EVT_STC_CALLTIP_CLICK, self._calltip_clicked)
 
         if factory.auto_scroll and (factory.selected_line != ''):
-            wx.EVT_SIZE(control, self._update_selected_line)
+            control.Bind(wx.EVT_SIZE, self._update_selected_line)
 
         if factory.auto_set:
             editor.on_trait_change(self.update_object, 'changed',
@@ -207,8 +206,7 @@ class SourceEditor(Editor):
         # changed:
         if (factory.line != '') or (factory.column != '') or \
                 (factory.selected_text != ''):
-            stc.EVT_STC_UPDATEUI(control, control.GetId(),
-                                 self._position_changed)
+            control.Bind(stc.EVT_STC_UPDATEUI, self._position_changed)
         self.set_tooltip()
 
     #-------------------------------------------------------------------------
@@ -440,12 +438,12 @@ class SourceEditor(Editor):
             self._editor.on_trait_change(self.update_object, 'changed',
                                          remove=True)
         if self.factory.key_bindings is not None:
-            self._editor.on_trait_change(self.key_pressed, 'key_pressed',
-                                         remove=True)
-
-        wx.EVT_KILL_FOCUS(self.control, None)
-
-        super(SourceEditor, self).dispose()
+                self._editor.on_trait_change(
+                    self.key_pressed, 'key_pressed', remove=True)
+        if self.control:
+            self.control.Bind(wx.EVT_KILL_FOCUS, None)
+        if self:
+            super(SourceEditor, self).dispose()
 
     #-- UI preference save/restore interface ---------------------------------
 

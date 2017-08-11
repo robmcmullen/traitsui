@@ -113,11 +113,15 @@ def toolkit_object(name, raise_exceptions=False):
                 (ETSConfig.toolkit, oname))
 
     be_obj = Unimplemented
-    be_mname = toolkit().__module__.split('.')[-2] + '.' + mname
+    #be_mname = 'import traitsui.'+toolkit().__module__.split('.')[-2] + '.' + mname +" as module"
+    be_mname = 'traitsui.' + toolkit().__module__.split('.')[
+        -2]  #+ '.' + mname 
     try:
-        module = __import__(
-            be_mname, globals=globals(), fromlist=[oname], level=1
-        )
+        #module = __import__(
+        #    be_mname, globals=globals(), fromlist=[oname], level=1
+        #)
+        import importlib
+        module=importlib.import_module("."+mname,be_mname)
         try:
             be_obj = getattr(module, oname)
         except AttributeError as e:

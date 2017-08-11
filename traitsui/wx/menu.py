@@ -179,7 +179,6 @@ class MakeMenu:
                             self.get_body(indented), ) in globals()
                     except:
                         handler = null_handler
-                wx.EVT_MENU(self.window, cur_id, handler)
                 not_checked = checked = disabled = False
                 line = line[: col]
                 match = options_pat.search(line)

@@ -235,11 +235,11 @@ class GUIToolkit(Toolkit):
             px, py = 0, 0
             pdx, pdy = screen_dx, screen_dy
         else:
-            px, py = parent.GetPositionTuple()
-            pdx, pdy = parent.GetSizeTuple()
+            px, py = parent.GetPosition().Get()
+            pdx, pdy = parent.GetSize().Get()
 
         # Calculate the correct width and height for the window:
-        cur_width, cur_height = window.GetSizeTuple()
+        cur_width, cur_height = window.GetSize().Get()
         width = view.width
         height = view.height
 
@@ -303,7 +303,7 @@ class GUIToolkit(Toolkit):
         y = min(y, wx.DisplaySize()[1])
 
         # Position and size the window as requested:
-        window.SetDimensions(max(0, x), max(0, y), width, height)
+        window.SetSize(max(0, x), max(0, y), width, height)
 
     #-------------------------------------------------------------------------
     #  Shows a 'Help' window for a specified UI and control:
@@ -414,16 +414,16 @@ class GUIToolkit(Toolkit):
             events = (wx.wxEVT_CHAR, )
 
         if handler is None:
-            handler = ui.route_event
+            handler = ui.route_event  #this method returns back to route_event below
 
         id = control.GetId()
-        event_handler = EventHandlerWrapper()
-        connect = event_handler.Connect
+        event_handler = EventHandlerWrapper()  #wx.EvtHandler()
+        connect = event_handler.Connect  #Connect Method of wx.EvtHandler
 
         for event in events:
             connect(id, id, event, handler)
 
-        control.PushEventHandler(event_handler)
+        #control.PushEventHandler( event_handler ) #where the real event hooking happens
 
         for child in control.GetChildren():
             self.hook_events(ui, child, events, handler)

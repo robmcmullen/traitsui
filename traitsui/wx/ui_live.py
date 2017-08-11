@@ -195,8 +195,10 @@ class LiveWindow(BaseDialog):
             window.SetBackgroundColour(WindowColor)
 
             self.control = window
-            wx.EVT_CLOSE(window, self._on_close_page)
-            wx.EVT_CHAR(window, self._on_key)
+            #wx.EVT_CLOSE( window, self._on_close_page )
+            window.Bind(wx.EVT_CLOSE, self._on_close_page)
+            #wx.EVT_CHAR(  window, self._on_key )
+            window.Bind(wx.EVT_CHAR, self._on_key)
 
         self.set_icon(view.icon)
         buttons = [self.coerce_button(button)
@@ -221,7 +223,7 @@ class LiveWindow(BaseDialog):
             sw = TraitsUIScrolledPanel(window)
             trait_sheet = panel(ui, sw)
             sizer.Add(trait_sheet, 1, wx.EXPAND)
-            tsdx, tsdy = trait_sheet.GetSize()
+            tsdx, tsdy = trait_sheet.GetSize().Get()
             sw.SetScrollRate(16, 16)
             max_dy = (2 * screen_dy) / 3
             sw.SetSizer(sizer)
@@ -364,7 +366,8 @@ class LiveWindow(BaseDialog):
         """ Handles the user clicking the **OK** button.
         """
         if self.ui.handler.close(self.ui.info, True):
-            wx.EVT_ACTIVATE(self.control, None)
+            self.control.Bind(wx.EVT_ACTIVATE, None)
+            #wx.EVT_ACTIVATE( self.control, None )
             self.close(wx.ID_OK)
             return True
 
@@ -495,13 +498,13 @@ class MouseMonitor(wx.Timer):
             return
 
         mx, my = wx.GetMousePosition()
-        cx, cy = control.ClientToScreenXY(0, 0)
-        cdx, cdy = control.GetSizeTuple()
+        cx, cy = control.ClientToScreen(0, 0)
+        cdx, cdy = control.GetSize().Get()
 
         if self.is_activated:
             # Don't close the popup if any mouse buttons are currently pressed:
             ms = wx.GetMouseState()
-            if ms.LeftDown() or ms.MiddleDown() or ms.RightDown():
+            if ms.LeftIsDown() or ms.MiddleIsDown() or ms.RightIsDown():
                 return
 
             # Check for the special case of the mouse pointer having to be

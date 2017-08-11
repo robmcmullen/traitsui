@@ -496,13 +496,14 @@ class MethodNode(MultiValueTreeNodeObject):
         """ Returns the formatted version of the value.
         """
         type = 'B'
-        if value.im_self is None:
+        try:
+            if value.im_self is None:
+                type = 'Unb'
+        except:
             type = 'Unb'
 
-        return '%sound method %s.%s()' % (
-            type,
-            value.im_class.__name__,
-            value.im_func.func_code.co_name)
+        return '%sound method %s.%s()' % (type, value.im_class.__name__,
+                                          value.im_func.func_code.co_name)
 
     #-------------------------------------------------------------------------
     #  Returns whether or not the object has children:

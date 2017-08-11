@@ -44,5 +44,6 @@ class SimpleEditor(BaseSimpleEditor, Editor):
         based on the type of each field.
     """
     pass
+CustomEditor=SimpleEditor
 
 ### EOF #######################################################################

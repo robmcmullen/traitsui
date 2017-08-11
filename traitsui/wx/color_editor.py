@@ -19,7 +19,7 @@
 #------------------------------------------------------------------------------
 
 import wx
-import wx.combo
+import wx.adv
 
 from traits.api import List, TraitError
 from traitsui.editors.color_editor \
@@ -223,15 +223,14 @@ class CustomColorEditor(BaseSimpleEditor):
         sizer = wx.BoxSizer(wx.HORIZONTAL)
 
         # 'text_control' is the text display of the color.
-        text_control = wx.TextCtrl(parent, -1, self.str_value,
-                                   style=wx.TE_PROCESS_ENTER)
-        wx.EVT_KILL_FOCUS(text_control, self.update_object)
-        wx.EVT_TEXT_ENTER(parent, text_control.GetId(), self.update_object)
+        text_control = wx.TextCtrl(
+            parent, -1, self.str_value, style=wx.TE_PROCESS_ENTER)
+        text_control.Bind(wx.EVT_KILL_FOCUS, self.update_object)
+        text_control.Bind(wx.EVT_TEXT_ENTER, self.update_object)
 
         # 'button_control' shows the 'Edit' button.
         button_control = wx.Button(parent, label='Edit', style=wx.BU_EXACTFIT)
-        wx.EVT_BUTTON(button_control, button_control.GetId(),
-                      self.open_color_dialog)
+        button_control.Bind(wx.EVT_BUTTON, self.open_color_dialog)
 
         sizer.Add(text_control, wx.ALIGN_LEFT)
         sizer.AddSpacer(8)
@@ -249,7 +248,6 @@ class CustomColorEditor(BaseSimpleEditor):
         """ Handles the user changing the contents of the edit control.
         """
         if not isinstance(event, wx._core.CommandEvent):
-            event.Skip()
             return
         try:
             # The TextCtrl object was saved as self._text_control in init().

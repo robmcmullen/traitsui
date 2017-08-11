@@ -57,12 +57,12 @@ def paint_parent(dc, window):
     parent = window.GetParent()
     slice = getattr(parent, '_image_slice', None)
     if slice is not None:
-        x, y = window.GetPositionTuple()
-        dx, dy = parent.GetSizeTuple()
+        x, y = window.GetPosition().Get()  #window.Sizer.GetPosition().Get()
+        dx, dy = parent.GetSize().Get()
         slice.fill(dc, -x, -y, dx, dy)
     else:
         # Otherwise, just paint the normal window background color:
-        dx, dy = window.GetClientSizeTuple()
+        dx, dy = window.GetClientSize().Get()
         if is_mac and hasattr(window, '_border') and window._border:
             dc.SetBackgroundMode(wx.TRANSPARENT)
             dc.SetBrush(wx.Brush(wx.Colour(0, 0, 0, 0)))
@@ -226,7 +226,7 @@ class ImageSlice(HasPrivateTraits):
         self.dy = dy = bitmap.GetHeight()
 
         # Create the opaque version of the bitmap:
-        self.opaque_bitmap = wx.EmptyBitmap(dx, dy)
+        self.opaque_bitmap = wx.Bitmap(dx, dy)
         mdc2 = wx.MemoryDC()
         mdc2.SelectObject(self.opaque_bitmap)
         mdc2.SetBrush(wx.Brush(WindowColor))
