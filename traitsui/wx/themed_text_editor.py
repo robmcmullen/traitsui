@@ -203,16 +203,16 @@ class _ThemedTextEditor(Editor):
         self._text_size = None
 
         # Set up the painting event handlers:
-        wx.EVT_ERASE_BACKGROUND(control, self._erase_background)
-        wx.EVT_PAINT(control, self._on_paint)
-        wx.EVT_CHAR(control, self._inactive_key_entered)
+        control.Bind(wx.EVT_ERASE_BACKGROUND, self._erase_background)
+        control.Bind(wx.EVT_PAINT, self._on_paint)
+        control.Bind(wx.EVT_CHAR, self._inactive_key_entered)
 
         # Handle 'focus' events:
-        wx.EVT_SET_FOCUS(control, self._set_focus)
-        wx.EVT_LEFT_UP(control, self._set_focus)
+        control.Bind(wx.EVT_SET_FOCUS, self._set_focus)
+        control.Bind(wx.EVT_LEFT_UP, self._set_focus)
 
         # Handle 'resize' events:
-        wx.EVT_SIZE(control, self._resize)
+        control.Bind(wx.EVT_SIZE, self._resize)
 
         self.set_tooltip()
 
@@ -324,20 +324,21 @@ class _ThemedTextEditor(Editor):
         self._text = text = wx.TextCtrl(control, -1, self.str_value,
                                         style=style)
         slice = self.image_slice
-        wdx, wdy = control.GetClientSize()
-        tdx, tdy = text.GetSize()
-        text.SetPosition(wx.Point(
-            slice.xleft, ((wdy + slice.xtop - slice.xbottom - tdy) / 2) + 1))
+        wdx, wdy = control.GetClientSize().Get()
+        tdx, tdy = text.GetSize().Get()
+        text.SetPosition(
+            wx.Point(slice.xleft, ((wdy + slice.xtop - slice.xbottom - tdy) /
+                                   2) + 1))
         text.SetSize(wx.Size(wdx - slice.xleft - slice.xright, tdy))
         text.SetSelection(-1, -1)
         text.SetFocus()
 
-        wx.EVT_KILL_FOCUS(text, self._text_completed)
-        wx.EVT_CHAR(text, self._key_entered)
-        wx.EVT_TEXT_ENTER(control, text.GetId(), self.update_object)
+        text.Bind(wx.EVT_KILL_FOCUS, self._text_completed)
+        text.Bind(wx.EVT_CHAR, self._key_entered)
+        text.Bind(wx.EVT_TEXT_ENTER, self.update_object)
 
         if factory.auto_set and (not factory.is_grid_cell):
-            wx.EVT_TEXT(control, text.GetId(), self.update_object)
+            text.Bind(wx.EVT_TEXT, self.update_object)
 
     def _destroy_text(self):
         """ Destroys the current text control.
@@ -369,7 +370,7 @@ class _ThemedTextEditor(Editor):
             displayed.
         """
         tdx, tdy, descent, leading = self._get_text_size()
-        wdx, wdy = self.control.GetClientSizeTuple()
+        wdx, wdy = self.control.GetClientSize().Get()
         slice = self.image_slice
         ady = wdy - slice.xtop - slice.xbottom
         ty = slice.xtop + ((ady - (tdy - descent)) / 2) - 1
@@ -425,7 +426,7 @@ class _ThemedTextEditor(Editor):
         slice = paint_parent(dc, control)
         slice2 = self.image_slice
         if slice2 is not default_image_slice:
-            wdx, wdy = control.GetClientSizeTuple()
+            wdx, wdy = control.GetClientSize().Get()
             slice2.fill(dc, 0, 0, wdx, wdy, True)
             slice = slice2
         elif slice is None:
@@ -454,8 +455,6 @@ class _ThemedTextEditor(Editor):
     def _text_completed(self, event):
         """ Handles the user transferring focus out of the text control.
         """
-        if isinstance(event, wx.FocusEvent):
-            event.Skip()
         if self.update_object(event):
             self._destroy_text()
 

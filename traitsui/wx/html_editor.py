@@ -25,10 +25,13 @@
 #-------------------------------------------------------------------------
 
 import os.path
+import base64
 import webbrowser
 
 import wx.html as wh
-
+import wx.html2 as webview
+# webview may require setting an environment variable
+#  GIO_MODULE_DIR for gio/modules to enable https
 from traits.api import Str
 
 # FIXME: ToolkitEditorFactory is a proxy class defined here just for backward
@@ -38,6 +41,84 @@ from traitsui.editors.html_editor import ToolkitEditorFactory
 
 from editor import Editor
 
+def image_to_string(imgfile):
+    with open(imgfile, "rb") as imageFile:
+        imgstr = base64.b64encode(imageFile.read())
+    return imgstr.decode("utf-8")
+
+def html_image(imgfile, size=None):
+    filename, file_extension = os.path.splitext(imgfile)
+    prefix='<img src="data:image/'+file_extension+';base64,'
+    the_size=' '
+    if size is not None:
+        if isinstance(size,tuple):
+           the_size='width="'+str(size[0])+'" height="'+str(size[1])+'"'
+        else:
+           the_size='width="'+str(size)+'"'
+    return prefix + image_to_string(imgfile)+'"'  + the_size+'>'
+
+
+#-------------------------------------------------------------------------------
+#  'SimpleEditor' class:
+#-------------------------------------------------------------------------------
+
+
+class SimpleEditor ( Editor ):
+    """ Simple style of editor for HTML, which displays interpreted HTML.
+    """
+    #---------------------------------------------------------------------------
+    #  Trait definitions:
+    #---------------------------------------------------------------------------
+
+    # Is the HTML editor scrollable? This values override the default.
+    scrollable = True
+
+    # External objects referenced in the HTML are relative to this URL
+    base_url = Str
+
+    #---------------------------------------------------------------------------
+    #  Finishes initializing the editor by creating the underlying toolkit
+    #  widget:
+    #---------------------------------------------------------------------------
+
+    def init ( self, parent ):
+        """ Finishes initializing the editor by creating the underlying toolkit
+            widget.
+        """
+        self.control = webview.WebView.New(parent)
+
+        #self.control.SetBorders( 2 )
+
+        self.base_url = self.factory.base_url
+
+        self.sync_value( self.factory.base_url_name, 'base_url', 'from' )
+    #---------------------------------------------------------------------------
+    #  Updates the editor when the object trait changes external to the editor:
+    #---------------------------------------------------------------------------
+
+    def update_editor ( self ):
+        """ Updates the editor when the object trait changes external to the
+            editor.
+        """
+        text = self.str_value
+        if self.factory.format_text:
+            text = self.factory.parse_text( text )
+        self.control.SetPage( text, self.base_url )
+
+
+
+
+    #-- Event Handlers ---------------------------------------------------------
+
+    def _base_url_changed(self):
+        url = self.base_url
+        if not url.endswith( '/' ):
+            url += '/'
+        #self.control.base_url = url
+        self.update_editor()
+
+
+# previous wx.html version
 #-------------------------------------------------------------------------
 #  URLResolvingHtmlWindow class:
 #-------------------------------------------------------------------------

@@ -67,12 +67,11 @@ class HistoryControl(HasPrivateTraits):
         self.control = control = wx.ComboBox(parent, -1, self.value,
                                              wx.Point(0, 0), wx.Size(-1, -1),
                                              self.history, style=wx.CB_DROPDOWN)
-        wx.EVT_COMBOBOX(parent, control.GetId(), self._update_value)
-        wx.EVT_KILL_FOCUS(control, self._kill_focus)
-        wx.EVT_TEXT_ENTER(parent, control.GetId(),
-                          self._update_text_value)
+        self.control.Bind(wx.EVT_COMBOBOX, self._update_value)
+        self.control.Bind(wx.EVT_KILL_FOCUS, self._kill_focus)
+        self.control.Bind(wx.EVT_TEXT_ENTER, self._update_text_value)
         if self.auto_set:
-            wx.EVT_TEXT(parent, control.GetId(), self._update_value_only)
+            self.control.Bind(wx.EVT_TEXT, self._update_value_only)
 
         return control
 
@@ -80,10 +79,11 @@ class HistoryControl(HasPrivateTraits):
         """ Disposes of the control at the end of its life cycle.
         """
         control, self.control = self.control, None
-        parent = control.GetParent()
-        wx.EVT_COMBOBOX(parent, control.GetId(), None)
-        wx.EVT_TEXT_ENTER(parent, control.GetId(), None)
-        wx.EVT_KILL_FOCUS(control, None)
+        if control is not None:
+            parent = control.GetParent()
+            control.Bind(wx.EVT_COMBOBOX, None)
+            control.Bind(wx.EVT_TEXT_ENTER, None)
+            control.Bind(wx.EVT_KILL_FOCUS, None)
 
     def set_value(self, value):
         """ Sets the specified value and adds it to the history.

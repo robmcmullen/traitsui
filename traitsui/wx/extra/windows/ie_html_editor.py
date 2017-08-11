@@ -128,13 +128,19 @@ class _IEHTMLEditor(Editor):
         self.sync_value(factory.html, 'html', 'to')
         self.sync_value(factory.base_url_name, 'base_url', 'from')
 
-        parent.Bind(iewin.EVT_StatusTextChange, self._status_modified, ie)
-        parent.Bind(iewin.EVT_TitleChange, self._title_modified, ie)
-        parent.Bind(iewin.EVT_DocumentComplete, self._page_loaded_modified, ie)
-        parent.Bind(iewin.EVT_NewWindow2, self._new_window_modified, ie)
-        parent.Bind(iewin.EVT_BeforeNavigate2, self._navigate_requested, ie)
+        #parent.Bind( iewin.EVT_StatusTextChange, self._status_modified,     ie )
+        #parent.Bind( iewin.EVT_TitleChange,      self._title_modified,      ie )
+        #parent.Bind( iewin.EVT_DocumentComplete, self._page_loaded_modified,ie )
+        #parent.Bind( iewin.EVT_NewWindow2,       self._new_window_modified, ie )
+        #parent.Bind( iewin.EVT_BeforeNavigate2,  self._navigate_requested,  ie )
 
-    #-------------------------------------------------------------------------
+        ie.Bind(iewin.EVT_StatusTextChange, self._status_modified)
+        ie.Bind(iewin.EVT_TitleChange, self._title_modified)
+        ie.Bind(iewin.EVT_DocumentComplete, self._page_loaded_modified)
+        ie.Bind(iewin.EVT_NewWindow2, self._new_window_modified)
+        ie.Bind(iewin.EVT_BeforeNavigate2, self._navigate_requested)
+
+    #---------------------------------------------------------------------------
     #  Updates the editor when the object trait changes external to the editor:
     #-------------------------------------------------------------------------
 

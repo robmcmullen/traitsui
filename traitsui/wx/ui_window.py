@@ -104,13 +104,15 @@ class UIWindow(HasPrivateTraits):
     #-- Property Implementations ---------------------------------------------
 
     def _get_width(self):
-        return self.control.GetClientSize()[0]
+        return self.control.GetClientSize().Get()[0]
 
     def _set_width(self, width):
-        self.control.SetSize(width, self.height)
+        self.control.SetSize(wx.Size(
+            width, self.height))  #self.control.SetSize( width, self.height )
 
     def _get_height(self):
-        return self.control.GetClientSize()[1]
+        return self.control.GetClientSize().Get()[1]
 
     def _set_height(self, height):
-        self.control.SetSize(self.width, height)
+        self.control.SetSize(wx.Size(
+            self.width, height))  #self.control.SetSize( self.width, height )

@@ -243,7 +243,7 @@ class ThemedControl(ThemedWindow):
         if (tdx + bdx) == 0:
             return EmptyBounds
 
-        wdx, wdy = control.GetClientSizeTuple()
+        wdx, wdy = control.GetClientSize().Get()
         spacing = (tdx != 0) * (bdx != 0) * self.spacing
         theme = self.theme or default_theme
         slice = theme.image_slice or ImageSlice()

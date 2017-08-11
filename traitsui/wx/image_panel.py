@@ -106,7 +106,7 @@ class ImagePanel(ThemedWindow):
         control = self.control
         dx, dy = 0, 0
         for child in control.GetChildren():
-            dx, dy = child.GetSizeTuple()
+            dx, dy = child.GetSize().Get()
 
         size = self._adjusted_size_of(dx, dy)
         control.SetSize(size)
@@ -193,7 +193,7 @@ class ImagePanel(ThemedWindow):
 
             alignment = theme.alignment
             label = theme.label
-            wdx, wdy = self.control.GetClientSizeTuple()
+            wdx, wdy = self.control.GetClientSize().Get()
             tdx, tdy, descent, leading = self.text_size
             tx = None
             slice = theme.image_slice
@@ -307,8 +307,8 @@ class ImageSizer(wx.PySizer):
         """ Layout the contents of the sizer based on the sizer's current size
             and position.
         """
-        x, y = self.GetPositionTuple()
-        dx, dy = self.GetSizeTuple()
+        x, y = self.GetPosition().Get()  #self.Sizer.GetPosition().Get()
+        dx, dy = self.GetSize().Get()
         slice = self._image_slice
         content = self._theme.content
         left = slice.xleft + content.left
@@ -322,4 +322,4 @@ class ImageSizer(wx.PySizer):
             if item.IsSizer():
                 item.GetSizer().SetDimension(ix, iy, idx, idy)
             else:
-                item.GetWindow().SetDimensions(ix, iy, idx, idy)
+                item.GetWindow().SetSize(ix, iy, idx, idy)

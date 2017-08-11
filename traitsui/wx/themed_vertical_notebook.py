@@ -140,9 +140,9 @@ class ThemedPage(HasPrivateTraits):
         """ Sets the size of the current active page.
         """
         if self.is_open:
-            self.open_page.control.SetDimensions(x, y, dx, dy)
+            self.open_page.control.SetSize(x, y, dx, dy)
         else:
-            self.closed_page.control.SetDimensions(x, y, dx, dy)
+            self.closed_page.control.SetSize(x, y, dx, dy)
 
     def register_name_listener(self, object, trait_name):
         """ Registers a listener on the specified object trait for a page name
@@ -346,8 +346,8 @@ class ThemedVerticalNotebook(HasPrivateTraits):
         control.SetSizer(ThemedVerticalNotebookSizer(self))
 
         # Set up the painting event handlers:
-        wx.EVT_ERASE_BACKGROUND(control, self._erase_background)
-        wx.EVT_PAINT(control, self._paint)
+        control.Bind(wx.EVT_ERASE_BACKGROUND, self._erase_background)
+        control.Bind(wx.EVT_PAINT, self._paint)
 
         return control
 
@@ -430,7 +430,7 @@ class ThemedVerticalNotebook(HasPrivateTraits):
         if control is not None:
             # Set the virtual size of the canvas (so scroll bars work right):
             sizer = control.GetSizer()
-            if control.GetSize()[0] == 0:
+            if control.GetSize().Get()[0] == 0:
                 control.SetSize(sizer.CalcInit())
             control.SetVirtualSize(sizer.CalcMin())
             control.Layout()
@@ -488,8 +488,8 @@ class ThemedVerticalNotebookSizer(wx.PySizer):
         """ Layout the contents of the sizer based on the sizer's current size
             and position.
         """
-        x, y = self.GetPositionTuple()
-        tdx, tdy = self.GetSizeTuple()
+        x, y = self.Sizer.GetPosition().Get()
+        tdx, tdy = self.GetSize().Get()
         cdy = ody = 0
         for page in self._notebook.pages:
             dx, dy = page.min_size

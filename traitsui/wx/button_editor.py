@@ -65,7 +65,8 @@ class SimpleEditor(Editor):
         label = self.factory.label or self.item.get_label(self.ui)
         self.control = wx.Button(parent, -1, self.string_value(label))
         self.sync_value(self.factory.label_value, 'label', 'from')
-        wx.EVT_BUTTON(parent, self.control.GetId(), self.update_object)
+        #wx.EVT_BUTTON( parent, self.control.GetId(), self.update_object )
+        self.control.Bind(wx.EVT_BUTTON, self.update_object)
         self.set_tooltip()
 
     #-------------------------------------------------------------------------
@@ -108,7 +109,8 @@ class SimpleEditor(Editor):
     def dispose(self):
         """ Disposes of the contents of an editor.
         """
-        wx.EVT_BUTTON(self.control.GetParent(), self.control.GetId(), None)
+        #wx.EVT_BUTTON( self.control.GetParent(), self.control.GetId(), None )
+        self.control.Bind(wx.EVT_BUTTON, None)
 
         super(SimpleEditor, self).dispose()
 

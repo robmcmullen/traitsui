@@ -22,7 +22,7 @@
 #  Imports:
 #-------------------------------------------------------------------------
 
-from wx.animate \
+from wx.adv \
     import Animation, AnimationCtrl
 
 from traits.api \

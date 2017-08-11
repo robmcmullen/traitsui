@@ -239,11 +239,10 @@ class SimpleEditor(Editor):
             height = max(height, height2)
             panel_height += height
 
-            list_sizer.Add(pcontrol, 0, wx.EXPAND)
-
             if resizable:
                 list_sizer.Add(control, 0, wx.LEFT | wx.RIGHT, 2)
 
+            list_sizer.Add(pcontrol, 0, wx.EXPAND)
             index += 1
 
         list_pane.SetSizer(list_sizer)
@@ -379,9 +378,7 @@ class SimpleEditor(Editor):
         self._menu_top.enabled(index > 0)
         self._menu_down.enabled(index < (len_list - 1))
         self._menu_bottom.enabled(index < (len_list - 1))
-        x, y = control.GetPosition()
-
-        self.control.PopupMenu(menu, (x + 8, y + 32))
+        self.control.PopupMenu(menu, control.GetPosition())
         menu.Destroy()
 
     #-------------------------------------------------------------------------

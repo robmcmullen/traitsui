@@ -202,8 +202,8 @@ class SimpleEditor(Editor):
         sizer.Add(column_sizer, 1, wx.EXPAND)
 
         # Hook up the event handlers:
-        wx.EVT_LISTBOX(parent, list.GetId(), handler1)
-        wx.EVT_LISTBOX_DCLICK(parent, list.GetId(), handler2)
+        list.Bind(wx.EVT_LISTBOX, handler1)
+        list.Bind(wx.EVT_LISTBOX_DCLICK, handler2)
 
         return list
 
@@ -215,9 +215,10 @@ class SimpleEditor(Editor):
         """ Creates a button.
         """
         button = wx.Button(parent, -1, label, style=wx.BU_EXACTFIT)
-        sizer.AddSpacer((space_before, space_before))
+        sizer.Add(space_before, space_before,
+                  0)  #sizer.AddSpacer( ( space_before, space_before ) )
         sizer.Add(button, 0, wx.EXPAND | wx.BOTTOM, 8)
-        wx.EVT_BUTTON(parent, button.GetId(), handler)
+        parent.Bind(wx.EVT_BUTTON, handler, button)
         return button
 
     #-------------------------------------------------------------------------
@@ -393,7 +394,7 @@ class SimpleEditor(Editor):
         """ Unselects all items in the given ListBox
         """
         for i in box.GetSelections():
-            box.SetSelection(i, False)
+            box.SetSelection(i)  #, False )
 
     #-------------------------------------------------------------------------
     #  Transfers all items from one list to another:
@@ -409,8 +410,10 @@ class SimpleEditor(Editor):
         while list_from.GetCount() > 0:
             index_to = list_to.GetCount()
             list_from.SetSelection(0)
-            list_to.InsertItems(self._get_selected_strings(list_from),
-                                index_to)
+            #list_to.Sizer.Inserts( self._get_selected_strings( list_from ),
+            #                     index_to )
+            list_to.InsertItems(
+                self._get_selected_strings(list_from), index_to)
             list_from.Delete(0)
             values_to.append(values_from[0])
             del values_from[0]

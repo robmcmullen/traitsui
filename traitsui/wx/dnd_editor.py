@@ -135,7 +135,7 @@ class SimpleEditor(Editor):
             g = data[:, 0] + data[:, 1] + data[:, 2]
             data[:, 0] = data[:, 1] = data[:, 2] = g
             image.SetData(numpy.ravel(data.astype(numpy.uint8)).tostring())
-            image.SetMaskColour(0, 0, 0)
+            image.SetColour(0, 0, 0)
             self._disabled_image = image.ConvertToBitmap()
 
         # Create the control and set up the event handlers:
@@ -146,10 +146,10 @@ class SimpleEditor(Editor):
         if self.drop_target:
             control.SetDropTarget(PythonDropTarget(self))
 
-        wx.EVT_LEFT_DOWN(control, self._left_down)
-        wx.EVT_LEFT_UP(control, self._left_up)
-        wx.EVT_MOTION(control, self._mouse_move)
-        wx.EVT_PAINT(control, self._on_paint)
+        control.Bind(wx.EVT_LEFT_DOWN, self._left_down)
+        control.Bind(wx.EVT_LEFT_UP, self._left_up)
+        control.Bind(wx.EVT_MOTION, self._mouse_move)
+        control.Bind(wx.EVT_PAINT, self._on_paint)
 
     #-------------------------------------------------------------------------
     #  Disposes of the contents of an editor:
@@ -159,10 +159,10 @@ class SimpleEditor(Editor):
         """ Disposes of the contents of an editor.
         """
         control = self.control
-        wx.EVT_LEFT_DOWN(control, None)
-        wx.EVT_LEFT_UP(control, None)
-        wx.EVT_MOTION(control, None)
-        wx.EVT_PAINT(control, None)
+        control.Bind(wx.EVT_LEFT_DOWN, None)
+        control.Bind(wx.EVT_LEFT_UP, None)
+        control.Bind(wx.EVT_MOTIONl, None)
+        control.Bind(wx.EVT_PAINT, None)
 
         super(SimpleEditor, self).dispose()
 
@@ -242,7 +242,7 @@ class SimpleEditor(Editor):
         if not control.IsEnabled():
             image = self._disabled_image
 
-        wdx, wdy = control.GetClientSizeTuple()
+        wdx, wdy = control.GetClientSize().Get()
         wx.PaintDC(control).DrawBitmap(
             image,
             (wdx - image.GetWidth()) / 2,

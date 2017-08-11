@@ -120,24 +120,24 @@ class _ThemedSliderEditor(Editor):
                                            wx.TAB_TRAVERSAL)
 
         # Set up the painting event handlers:
-        wx.EVT_ERASE_BACKGROUND(control, self._erase_background)
-        wx.EVT_PAINT(control, self._on_paint)
-        wx.EVT_SET_FOCUS(control, self._set_focus)
+        control.Bind(wx.EVT_ERASE_BACKGROUND, self._erase_background)
+        control.Bind(wx.EVT_PAINT, self._on_paint)
+        control.Bind(wx.EVT_SET_FOCUS, self._set_focus)
 
         # Set up mouse event handlers:
-        wx.EVT_LEFT_DOWN(control, self._left_down)
-        wx.EVT_LEFT_UP(control, self._left_up)
-        wx.EVT_MOTION(control, self._motion)
-        wx.EVT_MOUSEWHEEL(control, self._mouse_wheel)
-        wx.EVT_ENTER_WINDOW(control, self._enter_window)
-        wx.EVT_LEAVE_WINDOW(control, self._leave_window)
+        control.Bind(wx.EVT_LEFT_DOWN, self._left_down)
+        control.Bind(wx.EVT_LEFT_UP, self._left_up)
+        control.Bind(wx.EVT_MOTION, self._motion)
+        control.Bind(wx.EVT_MOUSEWHEEL, self._mouse_wheel)
+        control.Bind(wx.EVT_ENTER_WINDOW, self._enter_window)
+        control.Bind(wx.EVT_LEAVE_WINDOW, self._leave_window)
 
         # Set up the control resize handler:
         wx.EVT_SIZE(control, self._resize)
 
         # Set the tooltip:
         if not self.set_tooltip():
-            control.SetToolTipString('[%g..%g]' % (low, high))
+            control.SetToolTip('[%g..%g]' % (low, high))
 
     #-------------------------------------------------------------------------
     #  Disposes of the contents of an editor:
@@ -215,7 +215,7 @@ class _ThemedSliderEditor(Editor):
             displayed.
         """
         tdx, tdy, descent, leading = self._get_text_size()
-        wdx, wdy = self.control.GetClientSizeTuple()
+        wdx, wdy = self.control.GetClientSize().Get()
         ty = ((wdy - (tdy - descent)) / 2) - 2
         alignment = self.factory.alignment
         if alignment == 'left':
@@ -245,7 +245,7 @@ class _ThemedSliderEditor(Editor):
     def _set_slider_position(self, x):
         """ Calculates a new slider value for a specified (x,y) coordinate.
         """
-        wdx, wdy = self.control.GetSizeTuple()
+        wdx, wdy = self.control.GetSize().Get()
         if 3 <= x < wdx:
             value = self.low + (((x - 3) * (self.high - self.low)) / (wdx - 4))
             increment = self.increment
@@ -271,11 +271,11 @@ class _ThemedSliderEditor(Editor):
                                         wx.TE_PROCESS_ENTER)
         text.SetSelection(-1, -1)
         text.SetFocus()
-        wx.EVT_TEXT_ENTER(control, text.GetId(), self._text_completed)
-        wx.EVT_KILL_FOCUS(text, self._text_completed)
-        wx.EVT_ENTER_WINDOW(text, self._enter_text)
-        wx.EVT_LEAVE_WINDOW(text, self._leave_text)
-        wx.EVT_CHAR(text, self._key_entered)
+        text.Bind(wx.EVT_TEXT_ENTER, self._text_completed)
+        text.Bind(wx.EVT_KILL_FOCUS, self._text_completed)
+        text.Bind(wx.EVT_ENTER_WINDOW, self._enter_text)
+        text.Bind(wx.EVT_LEAVE_WINDOW, self._leave_text)
+        text.Bind(wx.EVT_CHAR, self._key_entered)
 
     def _destroy_text(self):
         """ Destroys the current text control.
@@ -432,8 +432,6 @@ class _ThemedSliderEditor(Editor):
     def _text_completed(self, event):
         """ Handles the user pressing the 'Enter' key in the text control.
         """
-        if isinstance(event, wx.FocusEvent):
-            event.Skip()
         if self._update_value(event):
             self._destroy_text()
 

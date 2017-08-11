@@ -37,12 +37,10 @@ class ImageControl(wx.Window):
 
     # Pens used to draw the 'selection' marker:
     _selectedPenDark = wx.Pen(
-        wx.SystemSettings_GetColour(wx.SYS_COLOUR_3DSHADOW), 1,
-        wx.SOLID)
+        wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DSHADOW), 1, wx.SOLID)
 
     _selectedPenLight = wx.Pen(
-        wx.SystemSettings_GetColour(wx.SYS_COLOUR_3DHIGHLIGHT), 1,
-        wx.SOLID)
+        wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DHIGHLIGHT), 1, wx.SOLID)
 
     #-------------------------------------------------------------------------
     #  Initializes the object:
@@ -62,13 +60,13 @@ class ImageControl(wx.Window):
         self._button_down = False
 
         # Set up the 'paint' event handler:
-        wx.EVT_PAINT(self, self._on_paint)
+        self.Bind(wx.EVT_PAINT, self._on_paint)
 
         # Set up mouse event handlers:
-        wx.EVT_LEFT_DOWN(self, self._on_left_down)
-        wx.EVT_LEFT_UP(self, self._on_left_up)
-        wx.EVT_ENTER_WINDOW(self, self._on_enter)
-        wx.EVT_LEAVE_WINDOW(self, self._on_leave)
+        self.Bind(wx.EVT_LEFT_DOWN, self._on_left_down)
+        self.Bind(wx.EVT_LEFT_UP, self._on_left_up)
+        self.Bind(wx.EVT_ENTER_WINDOW, self._on_enter)
+        self.Bind(wx.EVT_LEAVE_WINDOW, self._on_leave)
 
     #-------------------------------------------------------------------------
     #  Gets/Sets the current selection state of the image:
@@ -167,7 +165,7 @@ class ImageControl(wx.Window):
             self._button_down = False
 
         if self._selected is not None:
-            wdx, wdy = self.GetClientSizeTuple()
+            wdx, wdy = self.GetClientSize().Get()
             x = event.GetX()
             y = event.GetY()
             if (0 <= x < wdx) and (0 <= y < wdy):
@@ -190,7 +188,7 @@ class ImageControl(wx.Window):
         """ Handles the control being re-painted.
         """
         wdc = wx.PaintDC(self)
-        wdx, wdy = self.GetClientSizeTuple()
+        wdx, wdy = self.GetClientSize().Get()
         bitmap = self._bitmap
         bdx = bitmap.GetWidth()
         bdy = bitmap.GetHeight()

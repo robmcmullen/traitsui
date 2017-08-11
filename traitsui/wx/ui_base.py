@@ -370,8 +370,9 @@ class BaseDialog(object):
                 ui.add_enabled(action.enabled_when, editor)
             if method is None:
                 method = editor.perform
-        wx.EVT_BUTTON(self.control, button.GetId(), method)
+        #wx.EVT_BUTTON( self.control, button.GetId(), method )
+        self.control.Bind(wx.EVT_BUTTON, method, button)
         sizer.Add(button, 0, wx.LEFT, 5)
         if action.tooltip != '':
-            button.SetToolTipString(action.tooltip)
+            button.SetToolTip(action.tooltip)
         return button

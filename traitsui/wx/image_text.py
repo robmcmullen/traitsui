@@ -56,8 +56,8 @@ class ImageText(wx.PyWindow):
         self._text = text
 
         # Set up the painting event handlers:
-        wx.EVT_ERASE_BACKGROUND(self, self._erase_background)
-        wx.EVT_PAINT(self, self._on_paint)
+        self.Bind(wx.EVT_ERASE_BACKGROUND, self._erase_background)
+        self.Bind(wx.EVT_PAINT, self._on_paint)
 
         size = self.GetMinSize()
         self.SetMinSize(size)
@@ -83,7 +83,7 @@ class ImageText(wx.PyWindow):
         paint_parent(dc, self)
 
         if self._theme is not None:
-            wdx, wdy = self.GetClientSize()
+            wdx, wdy = self.GetClientSize().Get()
             self._image_slice.fill(dc, 0, 0, wdx, wdy, True)
             dc.SetTextForeground(self._image_slice.content_color)
 
@@ -152,7 +152,7 @@ class ImageText(wx.PyWindow):
             displayed.
         """
         tdx, tdy, descent, leading = self._get_text_size()
-        wdx, wdy = self.GetClientSize()
+        wdx, wdy = self.GetClientSize().Get()
         theme = self._theme
         if theme is None:
             return (wdx - tdx, (wdy - tdy) / 2, tdx, tdy)

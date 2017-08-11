@@ -89,8 +89,12 @@ def view_application(context, view, kind, handler, id, scrollable, args):
 
     app = wx.GetApp()
     if app is None or not is_event_loop_running_wx(app):
-        return ViewApplication(context, view, kind, handler, id,
-                               scrollable, args).ui.result
+        view = ViewApplication(context, view, kind, handler, id, scrollable,
+                               args)
+        """return ViewApplication( context, view, kind, handler, id,
+                                scrollable, args ).ui.result"""
+
+        return view.ui.result
 
     ui = view.ui(context,
                  kind=kind,

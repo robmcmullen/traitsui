@@ -68,7 +68,7 @@ class ThemedWindow(HasPrivateTraits):
         """ Returns whether a specified (x,y) coordinate is inside the control
             or not.
         """
-        wdx, wdy = self.control.GetClientSize()
+        wdx, wdy = self.control.GetClientSize().Get()
         return ((0 <= x < wdx) and (0 <= y < wdy))
 
     def refresh(self):
@@ -125,7 +125,7 @@ class ThemedWindow(HasPrivateTraits):
         if self.theme is not None:
             slice = self.theme.image_slice
             if slice is not None:
-                wdx, wdy = self.control.GetClientSize()
+                wdx, wdy = self.control.GetClientSize().Get()
                 slice.fill(dc, 0, 0, wdx, wdy, True)
 
                 if self.debug:

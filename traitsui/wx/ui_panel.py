@@ -1056,7 +1056,7 @@ class FillPanel(object):
             # ImagePanel around the editor control or not:
             control = editor.control
             if theme is None:
-                width, height = control.GetSizeTuple()
+                width, height = control.GetSize().Get()
             else:
                 item_panel.GetSizer().Add(control, 1, wx.EXPAND)
                 control = item_panel
@@ -1200,7 +1200,7 @@ class FillPanel(object):
                   pad_side, self.label_pad)
 
         if desc != '':
-            control.SetToolTipString('Specifies ' + desc)
+            control.SetToolTip('Specifies ' + desc)
 
         return control
 
@@ -1315,7 +1315,7 @@ class HTMLHelpWindow(wx.Frame):
         sizer.Add(wx.StaticLine(self, -1), 0, wx.EXPAND)
         b_sizer = wx.BoxSizer(wx.HORIZONTAL)
         button = wx.Button(self, -1, 'OK')
-        wx.EVT_BUTTON(self, button.GetId(), self._on_ok)
+        self.Bind(wx.EVT_BUTTON, self._on_ok, button)  #.GetId() )
         b_sizer.Add(button, 0)
         sizer.Add(b_sizer, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
         self.SetSizer(sizer)
