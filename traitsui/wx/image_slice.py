@@ -30,7 +30,7 @@ from colorsys \
     import rgb_to_hls
 
 from numpy \
-    import reshape, fromstring, uint8
+    import reshape, frombuffer, uint8
 
 from traits.api \
     import HasPrivateTraits, Instance, Int, List, Color, Enum, Bool
@@ -253,7 +253,7 @@ class ImageSlice(HasPrivateTraits):
         image = bitmap.ConvertToImage()
 
         # Convert the bitmap data to a numpy array for analysis:
-        data = reshape(fromstring(image.GetData(), uint8), (dy, dx, 3))
+        data = reshape(frombuffer(image.GetData(), uint8), (dy, dx, 3))
 
         # Find the horizontal slices:
         matches = []
