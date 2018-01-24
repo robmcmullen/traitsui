@@ -92,7 +92,7 @@ class ToolkitEditorFactory(BaseToolkitEditorFactory):
 #  'ColorComboBox' class:
 #------------------------------------------------------------------------------
 
-class ColorComboBox(wx.combo.OwnerDrawnComboBox):
+class ColorComboBox(wx.adv.OwnerDrawnComboBox):
 
     def OnDrawItem(self, dc, rect, item, flags):
 
@@ -151,7 +151,7 @@ class SimpleColorEditor(BaseSimpleEditor):
 
         self.control = ColorComboBox(parent, -
                                      1, current_color_name, wx.Point(0, 0), wx.Size(40, -
-                                                                                    1), self.choices, style=wx.wx.CB_READONLY)
+                                                                                    1), self.choices, style=wx.CB_READONLY)
 
         self.control.Bind(wx.EVT_COMBOBOX, self.color_selected)
         return
